@@ -24,9 +24,9 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [RoomController::class, 'index'])->name('home');
-    Route::get('/tictactoe/{room_id}', [RoomController::class, 'tictactoe'])->name('tictactoe');
+    Route::get('/tictactoe/{room}', [RoomController::class, 'tictactoe'])->name('tictactoe');
     Route::get('/partner', [RoomController::class, 'partner'])->name('partner');
-    Route::post('/checkout', [AuthController::class, 'checkout'])->name('checkout');
+    Route::get('/checkout', [RoomController::class, 'checkout'])->name('checkout');
 });
 
 Route::get('/admin')->middleware('admin');
