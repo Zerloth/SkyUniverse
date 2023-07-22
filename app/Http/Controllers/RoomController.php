@@ -12,8 +12,8 @@ class RoomController extends Controller
     {
         $user = Auth::user();
         $partner_id = $user->gender == 'male' ? substr_replace($user->id, "2", -1) : substr_replace($user->id, "1", -1);
-        $partnerExists = User::find($partner_id)->exists();
-        if ($partnerExists) {
+        $partner = User::find($partner_id);
+        if ($partner) {
             return redirect()->route("partner", ["room_id" => substr($partner_id, 0, 6)]);
         } else {
             return redirect()->route("tictactoe", ["room_id" => $user->id]);

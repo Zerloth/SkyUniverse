@@ -17,14 +17,14 @@ class AuthController extends Controller
     public function storeRegister(Request $request)
     {
         $genderCode = $request->gender == 'male' ? '01' : '02';
-        $id = 'SKY' . substr($request->dating_code, 2) . $genderCode;
+        $id = 'SKY' . $request->dating_code . $genderCode;
         $request->merge(['id' => $id]);
 
         $validated =  $request->validate([
             'id' => 'unique:users',
             'name' => 'required|regex:/^[\pL\s]+$/u',
             'email' => 'required|email|unique:users',
-            'dating_code' => 'required|regex:/^DT[0-9]{3}$/',
+            'dating_code' => 'required|regex:/^[0-9]{3}$/',
             'birthday' => 'required|date',
             'gender' => 'required|in:male,female',
             'phone_number' => 'required|regex:/^[0-9]{10,14}$/',
@@ -46,6 +46,7 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'birthday' => $validated['birthday'],
             'gender' => $validated['gender'],
+            'dating_code' => 'DT' . $validated['dating_code'],
             'phone_number' => "+65" . $validated['phone_number'],
             'image_path' => $image_path,
             'password' => Hash::make($validated['password']),
