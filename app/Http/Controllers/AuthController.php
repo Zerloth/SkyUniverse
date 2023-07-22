@@ -44,7 +44,6 @@ class AuthController extends Controller
             'id' => $id,
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'dating_code' => $validated['dating_code'],
             'birthday' => $validated['birthday'],
             'gender' => $validated['gender'],
             'phone_number' => "+65" . $validated['phone_number'],
