@@ -45,12 +45,12 @@
         </div>
 
         <div class="input-group has-validation mb-3">
-            <span class="input-group-text">Code</span>
+            <span class="input-group-text">Code DT</span>
             <div class="form-floating @error('dating_code')is-invalid @enderror @error('id')is-invalid @enderror">
                 <input name="dating_code" id="dating_code" type="text" aria-describedby="invalid-dating_code"
-                    value="{{ old('dating_code') ?? '' }}" placeholder="DTXXX"
+                    value="{{ old('dating_code') ?? '' }}" placeholder="E.g. 001"
                     class="form-control @error('dating_code')is-invalid @enderror @error('id')is-invalid @enderror">
-                <label for="dating_code" class="form-label">E.g. DT001</label>
+                <label for="dating_code" class="form-label">E.g. 001</label>
             </div>
             @if ($errors->has('dating_code'))
                 <div class="invalid-feedback" id="invalid-dating_code">
