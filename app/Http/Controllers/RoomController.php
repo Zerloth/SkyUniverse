@@ -49,5 +49,16 @@ class RoomController extends Controller
 
     public function checkout()
     {
+        return view('checkout');
+    }
+    public function checkoutForm(Request $request){
+        // dd($request->all());
+        return view('checkout_form', ['value'=>$request->inlineRadioOptions]);
+    }
+    public function bayar(Request $request){
+        dd($request->all());
+        $validated =  $request->validate([
+            
+        ]);
     }
 }
