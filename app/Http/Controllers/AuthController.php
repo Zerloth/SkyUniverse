@@ -79,6 +79,10 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
+            if(Auth::user()->role == '1') //1 = Admin Login
+            {
+                return redirect()->route('adminhome');
+            }
             if ($user->status == 'banned') {
                 return redirect()->route('banned');
             } else {

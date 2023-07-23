@@ -24,12 +24,16 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [RoomController::class, 'index'])->name('home');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/tictactoe/{room}', [RoomController::class, 'tictactoe'])->name('tictactoe');
     Route::get('/partner/{room}', [RoomController::class, 'partner'])->name('partner');
     Route::get('/checkout', [RoomController::class, 'checkout'])->name('checkout');
     Route::get('/checkout/{lokasi}', [RoomController::class, 'checkoutFilter'])->name('checkoutFilter');
     Route::post('/checkoutForm', [RoomController::class, 'checkoutForm'])->name('checkoutForm');
     Route::post('/bayar', [RoomController::class, 'bayar'])->name('bayar');
+});
+Route::group(['middleware' => ['auth','isAdmin']], function () {
+    Route::get('/adminhome', [RoomController::class, 'indexadmin'])->name('adminhome');
 });
 
 Route::post('/test', [RoomController::class, 'test']);

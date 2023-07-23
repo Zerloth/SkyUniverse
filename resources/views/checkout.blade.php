@@ -11,6 +11,11 @@
 </head>
 
 <body class="container">
+  <form action="{{ route('logout') }}" method="post">
+    @csrf
+    <button type="submit">Logout</button>
+  </form>
+  
     <h1>Checkout</h1>
     <div class="my-5 row">
       <h2>Filter boss</h2>
