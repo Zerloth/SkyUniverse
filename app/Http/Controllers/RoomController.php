@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TictactoeTurn;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,18 +18,19 @@ class RoomController extends Controller
         if ($partner) {
             return redirect()->route("partner", ["room" => substr($partner_id, 0, 6)]);
         } else {
-            $room = Room::whereNull('user1_id')
-                ->orWhereNull('user2_id')
-                ->join('users AS u1', 'u1.id', '=', 'rooms.user1_id')
-                ->join('users AS u2', 'u2.id', '=', 'rooms.user2_id')
-                ->where('u1.gender', '<>', $user->gender)
-                ->orWhere('u2.gender', '<>', $user->gender)
+            $room = Room::whereNull('user2_id')
+                ->join('users', 'users.id', '=', 'rooms.user1_id')
+                ->where('users.gender', '<>', $user->gender)
+                ->select('rooms.id')
                 ->first();
 
             if (!$room) {
                 $room = Room::create([
                     'user1_id' => $user->id
                 ]);
+            } else {
+                $room->user2_id = $user->id;
+                $room->save();
             }
 
             return redirect()->route("tictactoe", ["room" => $room->id]);
@@ -37,28 +39,42 @@ class RoomController extends Controller
 
     public function tictactoe(Room $room)
     {
-        if ($room->user1_id && $room->user2_id) {
+        $user = Auth::user();
+        if ($room->user1_id != $user->id  && $room->user2_id != $user->id) {
             return redirect()->route("home");
         }
-        return view("tictactoe");
+        $symbol = $room->user1_id == $user->id ? 'x' : 'o';
+
+        return view("tictactoe", ['symbol' => $symbol, "dating_code" => $user->dating_code]);
     }
 
-    public function partner()
+    public function partner($room)
     {
+        $user = Auth::user();
+        $partner_id = $user->gender == 'male' ? $room . '02' : $room . '01';
+        $partner = User::find($partner_id);
+        return view('partner', ['partner' => $partner]);
     }
 
     public function checkout()
     {
         return view('checkout');
     }
-    public function checkoutForm(Request $request){
+    public function checkoutForm(Request $request)
+    {
         // dd($request->all());
-        return view('checkout_form', ['value'=>$request->inlineRadioOptions]);
+        return view('checkout_form', ['value' => $request->inlineRadioOptions]);
     }
-    public function bayar(Request $request){
+    public function bayar(Request $request)
+    {
         dd($request->all());
-        $validated =  $request->validate([
-            
-        ]);
+        $validated =  $request->validate([]);
+    }
+
+    public function test(Request $request)
+    {
+        event(new TictactoeTurn($request->room, $request->cell, $request->symbol));
+
+        return response()->json(["success" => "yeah"]);
     }
 }

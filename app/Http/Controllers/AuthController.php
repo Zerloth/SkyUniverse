@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PartnerExist;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -35,10 +37,12 @@ class AuthController extends Controller
             'id' => "ID DT sudah terpakai"
         ]);
 
-        $image_path = $request->file('image')->storeAs(
-            'public/profiles',
-            $id
-        );
+        $uploaded_image = $request->file('image');
+        // $image_path = $request->file('image')->storeAs(
+        //     'public/profiles',
+        //     $id . $uploaded_image->getClientOriginalExtension()
+        // );
+        $image_path = Storage::putFileAs('public/profiles', $uploaded_image, $id . $uploaded_image->getClientOriginalExtension());
 
         $user = User::create([
             'id' => $id,
@@ -52,8 +56,6 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'status' => 'online'
         ]);
-
-        Auth::login($user);
 
         return redirect()->back()->with('status', 'Selamat akun anda berhasil dibuat, anda dapat login menggunakan ' . $validated['email'] . ' atau ' . $id);
     }
@@ -76,10 +78,11 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            if (Auth::user()->status == 'banned') {
+            $user = Auth::user();
+            if ($user->status == 'banned') {
                 return redirect()->route('banned');
             } else {
+                event(new PartnerExist($user->dating_code));
                 return redirect()->route('home');
             }
         } else {

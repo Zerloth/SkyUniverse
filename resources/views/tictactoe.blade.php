@@ -11,22 +11,26 @@
 
 <body class="container">
     <h1 class="testing">Waiting...</h1>
-    <div class="board" id="main">
-        <span id="turn">Tic Tac Toe</span>
-
-        <div class="box" style="border-left: 0; border-top: 0" id="box1"></div>
-        <div class="box" style="border-top: 0" id="box2"></div>
-        <div class="box" style="border-top: 0; border-right: 0" id="box3"></div>
-        <div class="box" style="border-left: 0" id="box4"></div>
-        <div class="box" id="box5"></div>
-        <div class="box" style="border-right: 0" id="box6"></div>
-        <div class="box" style="border-left: 0; border-bottom: 0" id="box7"></div>
-        <div class="box" style="border-bottom: 0" id="box8"></div>
-        <div class="box" style="border-right: 0; border-bottom: 0" id="box9"></div>
+    <div class="board" id="board">
+        <div id="cell1" class="cell" data-cell></div>
+        <div id="cell2" class="cell" data-cell></div>
+        <div id="cell3" class="cell" data-cell></div>
+        <div id="cell4" class="cell" data-cell></div>
+        <div id="cell5" class="cell" data-cell></div>
+        <div id="cell6" class="cell" data-cell></div>
+        <div id="cell7" class="cell" data-cell></div>
+        <div id="cell8" class="cell" data-cell></div>
+        <div id="cell9" class="cell" data-cell></div>
+    </div>
+    <div class="winning-message" id="winningMessage">
+        <div data-winning-message-text></div>
+        <button id="restartButton">Restart</button>
     </div>
 
-    <button class="btn btn-rounded" id="replay">Play Again</button>
-
+    <script>
+        var dating_code = "{{ $dating_code }}"
+        var symbol = "{{ $symbol }}";
+    </script>
 </body>
 
 </html>
