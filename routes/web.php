@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tictactoe/{room}', [RoomController::class, 'tictactoe'])->name('tictactoe');
     Route::get('/partner/{room}', [RoomController::class, 'partner'])->name('partner');
     Route::get('/checkout', [RoomController::class, 'checkout'])->name('checkout');
+    Route::get('/checkout/{lokasi}', [RoomController::class, 'checkoutFilter'])->name('checkoutFilter');
     Route::post('/checkoutForm', [RoomController::class, 'checkoutForm'])->name('checkoutForm');
     Route::post('/bayar', [RoomController::class, 'bayar'])->name('bayar');
 });

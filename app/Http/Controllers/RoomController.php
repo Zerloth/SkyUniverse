@@ -7,6 +7,9 @@ use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Lokasi;
+use App\Models\Transaction;
+use Redirect;
 
 class RoomController extends Controller
 {
@@ -58,17 +61,46 @@ class RoomController extends Controller
 
     public function checkout()
     {
-        return view('checkout');
+
+        $lokasi = Lokasi::all();
+        return view('checkout', ['lokasi' => $lokasi]);
+    }
+    public function checkoutFilter($lokasi)
+    {
+
+        $lokasi = Lokasi::where('lokasi', '=', $lokasi)->get();
+        return view('checkout', ['lokasi' => $lokasi]);
     }
     public function checkoutForm(Request $request)
     {
-        // dd($request->all());
-        return view('checkout_form', ['value' => $request->inlineRadioOptions]);
+        // dd($request);
+        return view('checkout_form', ['request' => $request->all()]);
     }
     public function bayar(Request $request)
     {
-        dd($request->all());
-        $validated =  $request->validate([]);
+        // dd($request->all());
+        $validated =  $request->validate([
+            "penerima" => 'required|regex:/^[\pL\s]+$/u',
+            "alamat" => 'required',
+            "nomortelepon" => 'required|regex:/^[0-9]{10,14}$/',
+            "kurir" => 'required',
+            "harga" => 'required',
+            "pembayaran" => 'required',
+        ]);
+        if(!$validated){
+            return Redirect::back()->withErrors($validator)->withInput($request->input());
+        }
+        // $transaction = Transaction::create([
+        //     'penerima' => $request->penerima,
+        //     'alamat_kirim' => $request->alamat,
+        //     'nomor_telepon' => $request->telepon,
+        //     'kurir' => $request->kurir,
+        //     'metode_pembayaran' => $request->metode_pembayaran,
+        //     'total' => $request->total,
+        //     'id_user' => Auth::id()
+        // ]);
+
+        return Redirect::back()->withErrors("Success bro")->withInput($request->input());
     }
 
     public function test(Request $request)

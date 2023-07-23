@@ -12,25 +12,28 @@
 
 <body class="container">
     <h1>Checkout</h1>
-
-    <form method="POST" action="{{ route('checkoutForm') }}">
+    <div class="my-5 row">
+      <h2>Filter boss</h2>
+      <a href="{{ route('checkoutFilter', ['lokasi' => "Jakarta"]) }}" class="text-decoration-none text-dark col-3">Jakarta</a>
+      <a href="{{ route('checkoutFilter', ['lokasi' => "Singapore"]) }}" class="text-decoration-none text-dark col-3">Singapore</a>
+      <a href="{{ route('checkoutFilter', ['lokasi' => "Tangerang"]) }}" class="text-decoration-none text-dark col-3">Tangerang</a>
+    </div>
+    <form method="POST" action="{{ route('checkoutForm') }}" class="">
         @csrf
-        <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-            <img src="{{ asset('public/lokasi/lokasi1.jpeg') }}" alt="option1">
-            <label class="form-check-label" for="inlineRadio1">1</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-            <img src="{{ asset('public/lokasi/lokasi2.jpeg') }}" alt="option2">
-            <label class="form-check-label" for="inlineRadio2">2</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="option3">
-            <img src="{{ asset('public/lokasi/lokasi1.jpeg') }}" alt="option3">
-            <label class="form-check-label" for="inlineRadio3">3</label>
-          </div>
+        <div class="row">
+          @for ($i = 0; $i<$lokasi->count(); $i++)
+            <div class="col-4">
+              <div class="form-check form-check">
+                <input class="form-check-input" type="radio" name="options" id="inlineRadio{{ $i }}" value="option{{ $i }}">
+                <img src="{{ asset("public/lokasi/lokasi".$i."jpeg") }}" alt="option{{ $i }}">
+                <input readonly type="text" id="lokasi" class="form-control-plaintext" name="lokasi" value="{{ $lokasi[$i]->lokasi }}">
+                <input readonly type="text" id="harga" class="form-control-plaintext" name="harga" value="Rp. {{ $lokasi[$i]->harga }}">
+                <input readonly type="text" id="alamat" class="form-control-plaintext" name="alamat" value="{{ $lokasi[$i]->alamat }}">
+              </div>
+            </div>
+          @endfor
         </div>
+        
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </body>
