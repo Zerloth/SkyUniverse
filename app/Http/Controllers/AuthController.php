@@ -31,6 +31,8 @@ class AuthController extends Controller
             'gender' => 'required|in:male,female',
             'phone_number' => 'required|regex:/^[0-9]{10,14}$/',
             'image' => 'required|image',
+            'password' => 'required|string|confirmed|min:8',
+            'password_confirmation' => 'required|string',
         ], [
             'id' => "ID DT sudah terpakai"
         ]);
