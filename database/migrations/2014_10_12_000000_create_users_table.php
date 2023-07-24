@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('image_path');
             $table->string('password');
             $table->enum('status', ['offline', 'online', 'banned']);
-            $table->integer('role')->default(0);
+            $table->enum('role', ['user', 'admin'])->default('user');
             $table->rememberToken();
             $table->timestamps();
         });

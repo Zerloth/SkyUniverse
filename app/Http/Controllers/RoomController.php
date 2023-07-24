@@ -9,13 +9,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Lokasi;
 use App\Models\Transaction;
-use Redirect;
+use Illuminate\Contracts\Session\Session;
 
 class RoomController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
+
+        if (Auth::user()->role == 'admin') {
+            return redirect()->route('admin.home');
+        }
         $partner_id = $user->gender == 'male' ? substr_replace($user->id, "2", -1) : substr_replace($user->id, "1", -1);
         $partner = User::find($partner_id);
         if ($partner) {
@@ -67,15 +71,24 @@ class RoomController extends Controller
     }
     public function checkoutFilter($lokasi)
     {
-
         $lokasi = Lokasi::where('lokasi', '=', $lokasi)->get();
         return view('checkout', ['lokasi' => $lokasi]);
     }
+
+    public function checkoutValidate(Request $request)
+    {
+        $validated = $request->validate([
+            "options" => 'required'
+        ]);
+
+        return redirect()->route("checkoutForm", ["option" => $request->all()]);
+    }
+
     public function checkoutForm(Request $request)
     {
-        // dd($request);
-        return view('checkout_form', ['request' => $request->all()]);
+        return view('checkout_form', ["request" => $request->option]);
     }
+
     public function bayar(Request $request)
     {
         // dd($request->all());
@@ -87,26 +100,64 @@ class RoomController extends Controller
             "harga" => 'required',
             "pembayaran" => 'required',
         ]);
-        if(!$validated){
-            return Redirect::back()->withErrors($validator)->withInput($request->input());
-        }
-        // $transaction = Transaction::create([
-        //     'penerima' => $request->penerima,
-        //     'alamat_kirim' => $request->alamat,
-        //     'nomor_telepon' => $request->telepon,
-        //     'kurir' => $request->kurir,
-        //     'metode_pembayaran' => $request->metode_pembayaran,
-        //     'total' => $request->total,
-        //     'id_user' => Auth::id()
-        // ]);
 
-        return Redirect::back()->withErrors("Success bro")->withInput($request->input());
+        $transaction = Transaction::create([
+            'penerima' => $request->penerima,
+            'alamat_kirim' => $request->alamat,
+            'nomor_telepon' => $request->nomortelepon,
+            'kurir' => $request->kurir,
+            'metode_pembayaran' => $request->pembayaran,
+            'total' => $request->harga,
+            'id_user' => Auth::id()
+        ]);
+
+        return redirect()->back()->with("success", "Pembayaran berhasil");
     }
 
-    public function test(Request $request)
+    public function admin()
+    {
+        $users = User::where('role', '<>', 'admin')->get();
+        return view('admin', ["users" => $users]);
+    }
+
+    public function editUser(User $user)
+    {
+        return view('edituser', ["user" => $user]);
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        $genderCode = $request->gender == 'male' ? '01' : '02';
+        $id = 'SKY' . $request->dating_code . $genderCode;
+        $request->merge(['id' => $id]);
+
+        $validated =  $request->validate([
+            'id' => 'unique:users',
+            'name' => 'required|regex:/^[\pL\s]+$/u',
+            'email' => 'required|email|unique:users',
+            'dating_code' => 'required|regex:/^[0-9]{3}$/',
+            'birthday' => 'required|date',
+            'gender' => 'required|in:male,female',
+            'phone_number' => 'required|regex:/^[0-9]{10,14}$/',
+            'image' => 'nullable|image',
+            'password' => 'required|string|confirmed|min:8',
+            'password_confirmation' => 'required|string',
+        ], [
+            'id' => "ID DT sudah terpakai"
+        ]);
+    }
+
+    public function ban(User $user)
+    {
+        $user->status = "banned";
+        $user->save;
+        return redirect()->back()->with("success", "Account banned");
+    }
+
+    public function turn(Request $request)
     {
         event(new TictactoeTurn($request->room, $request->cell, $request->symbol));
 
-        return response()->json(["success" => "yeah"]);
+        return response()->json(["success" => "true"]);
     }
 }

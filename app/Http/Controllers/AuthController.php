@@ -31,8 +31,6 @@ class AuthController extends Controller
             'gender' => 'required|in:male,female',
             'phone_number' => 'required|regex:/^[0-9]{10,14}$/',
             'image' => 'required|image',
-            'password' => 'required|string|confirmed|min:8',
-            'password_confirmation' => 'required|string',
         ], [
             'id' => "ID DT sudah terpakai"
         ]);
@@ -79,9 +77,9 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             $user = Auth::user();
-            if(Auth::user()->role == '1') //1 = Admin Login
+            if (Auth::user()->role == 'admin') //1 = Admin Login
             {
-                return redirect()->route('adminhome');
+                return redirect()->route('admin.home');
             }
             if ($user->status == 'banned') {
                 return redirect()->route('banned');

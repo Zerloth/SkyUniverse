@@ -29,12 +29,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/partner/{room}', [RoomController::class, 'partner'])->name('partner');
     Route::get('/checkout', [RoomController::class, 'checkout'])->name('checkout');
     Route::get('/checkout/{lokasi}', [RoomController::class, 'checkoutFilter'])->name('checkoutFilter');
-    Route::post('/checkoutForm', [RoomController::class, 'checkoutForm'])->name('checkoutForm');
+    Route::post('/checkout-validate', [RoomController::class, 'checkoutValidate'])->name('checkout.validate');
+    Route::get('/checkoutForm', [RoomController::class, 'checkoutForm'])->name('checkoutForm');
     Route::post('/bayar', [RoomController::class, 'bayar'])->name('bayar');
 });
-Route::group(['middleware' => ['auth','isAdmin']], function () {
-    Route::get('/adminhome', [RoomController::class, 'indexadmin'])->name('adminhome');
+Route::group(['middleware' => ['isAdmin']], function () {
+    Route::get('/adminhome', [RoomController::class, 'admin'])->name('admin.home');
 });
 
-Route::post('/test', [RoomController::class, 'test']);
+Route::post('/test', [RoomController::class, 'turn']);
 Route::get('/admin')->middleware('admin');
